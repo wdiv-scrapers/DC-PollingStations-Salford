@@ -1,8 +1,24 @@
+import json
 from dc_base_scrapers.ckan_scraper import CkanScraper
+from dc_base_scrapers.common import get_data_from_url
 from dc_base_scrapers.geojson_scraper import (
     GeoJsonScraper,
     RandomIdGeoJSONScraper
 )
+
+
+class SalfordCkanScraper(CkanScraper):
+
+    def get_data(self):
+        data_str = get_data_from_url(self.url)
+        data = json.loads(data_str.decode(self.encoding))
+
+        for resource in data['result']['resources']:
+            if 'tracking_summary' in resource:
+                del(resource['tracking_summary'])
+
+        return (
+            bytes(json.dumps(data, sort_keys=True, indent=4), 'utf-8'), data)
 
 
 base_url = 'https://salforddataquay.uk/api/3/action/package_show?id='
@@ -22,7 +38,7 @@ districts_info = {
 council_id = 'E08000006'
 
 
-stations_meta_scraper = CkanScraper(
+stations_meta_scraper = SalfordCkanScraper(
     base_url,
     council_id,
     stations_info['dataset'],
@@ -31,7 +47,7 @@ stations_meta_scraper = CkanScraper(
     'utf-8')
 stations_url = stations_meta_scraper.scrape()
 
-districts_meta_scraper = CkanScraper(
+districts_meta_scraper = SalfordCkanScraper(
     base_url,
     council_id,
     districts_info['dataset'],

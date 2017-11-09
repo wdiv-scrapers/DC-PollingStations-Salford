@@ -13,6 +13,9 @@ class SalfordCkanScraper(CkanScraper):
         data_str = get_data_from_url(self.url)
         data = json.loads(data_str.decode(self.encoding))
 
+        if 'tracking_summary' in data['result']:
+            del(data['result']['tracking_summary'])
+
         for resource in data['result']['resources']:
             if 'tracking_summary' in resource:
                 del(resource['tracking_summary'])

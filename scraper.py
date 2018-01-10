@@ -1,10 +1,21 @@
 import json
+import ssl
+import urllib.request
+from retry import retry
+from urllib.error import HTTPError
 from dc_base_scrapers.ckan_scraper import CkanScraper
-from dc_base_scrapers.common import get_data_from_url
 from dc_base_scrapers.geojson_scraper import (
     GeoJsonScraper,
     RandomIdGeoJSONScraper
 )
+
+
+@retry(HTTPError, tries=2, delay=30)
+def get_data_from_url(url):
+    context = ssl._create_unverified_context()
+    with urllib.request.urlopen(url, timeout=300, context=context) as response:
+        data = response.read()
+        return data
 
 
 class SalfordCkanScraper(CkanScraper):

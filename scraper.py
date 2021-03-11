@@ -49,7 +49,7 @@ districts_info = {
     'return_format': 'geojson'
 }
 
-council_id = 'E08000006'
+council_id = 'SLF'
 
 
 stations_meta_scraper = SalfordCkanScraper(
